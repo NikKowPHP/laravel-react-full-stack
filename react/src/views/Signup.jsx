@@ -4,11 +4,13 @@ import { useRef } from 'react';
 import axios from 'axios';
 import axiosClient from '../axios-client';
 import { useStateContext } from '../contexts/ContextProvider';
+import { useState } from 'react';
 export default function Signup() {
 	const nameRef = useRef();
 	const emailRef = useRef();
 	const passwordRef = useRef();
 	const passwordConfirmationRef= useRef();
+	const [errors, setErrors] = useState(null);
 	const {setUser, setToken} = useStateContext();
 
 	const onSubmit = (ev) => {
@@ -29,16 +31,20 @@ export default function Signup() {
 			const response = err.response;
 			if(response && response.status === 422) {
 				console.log(response.data.errors);
+				setErrors(response.data.errors);
 			}
 		})
 	}
 	return (
 		<div className='login-signup-form animated fadeInDown'>
 			<div className="form">
-				<form action="" onSubmit={onSubmit}>
+				<form action="" method="post" onSubmit={onSubmit}>
 					<h1 className="title">
 						Signup for free	
 					</h1>
+					{errors && <div className='alert'>
+						{Object.keys(errors).map(key => (<p key={key}>{errors[key][0]}</p>))}
+						</div>}
 					<input ref={nameRef} placeholder='text'  type="Full name" />
 					<input ref={emailRef} placeholder='Email' type="email" />
 					<input ref={passwordRef} placeholder='Password' type="password" />
