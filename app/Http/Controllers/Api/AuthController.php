@@ -29,7 +29,6 @@ class AuthController extends Controller
         $credentials = $loginRequest->validated();
         if(!Auth::attempt($credentials)) {
             return response([
-                'error' => $credentials,
                 'message' => 'Provided email address or password is incorrect'
             ], 402);
         }
