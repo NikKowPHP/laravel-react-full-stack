@@ -5,7 +5,7 @@ import { Navigate } from 'react-router-dom';
 import axiosClient from '../axios-client.js';
 
 export default function DefaultLayout() {
-	const {user, token, setUser, setToken } = useStateContext();
+	const {user, token,notification, setUser, setToken } = useStateContext();
 	if(!token) {
 		return <Navigate to= "/login" />
 	}
@@ -48,6 +48,10 @@ export default function DefaultLayout() {
 					
 				</main>
 			</div>
+			{notification && <div className="notification animated fadeInDown">
+				{notification}
+			</div>
+}
 		</div>
 	)
 }
