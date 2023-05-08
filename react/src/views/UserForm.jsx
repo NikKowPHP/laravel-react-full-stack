@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Form, useParams } from 'react-router-dom'
 import axiosClient from '../axios-client';
+import { useNavigate } from 'react-router-dom';
 
 export default function UserForm() {
 	const {id} = useParams();
+	const navigate = useNavigate();
 	const [loading, setLoading] = useState(false)
+	const [errors, setErrors] = useState(false);
 	const [user, setUser] = useState({
 		id: null,
 		name: '',
@@ -28,10 +31,43 @@ export default function UserForm() {
 
 	const onSubmit = (ev) => {
 		ev.preventDefault();
-		
+		if(user.id) {
+			axiosClient.put(`/users/${user.id}` , user)
+			.then(()=> {
+				//TODO: show notification
+				navigate('/users');
+
+			})
+		.catch(err => {
+			const response = err.response;
+			if(response && response.status === 422) {
+				console.log(response.data.errors);
+				setErrors(response.data.errors);
+			}
+		})
+		}
+		else {
+			axiosClient.post(`/users/` , user)
+			.then(()=> {
+				//TODO: show notification
+				navigate('/users');
+
+			})
+		.catch(err => {
+			const response = err.response;
+			if(response && response.status === 422) {
+				console.log(response.data.errors);
+				setErrors(response.data.errors);
+			}
+		})
+			
+		}
 	}
 	return (
 		<>
+					{errors && <div className='alert'>
+						{Object.keys(errors).map(key => (<p key={key}>{errors[key][0]}</p>))}
+						</div>}
 		{user.id && <h1>Update User: {user.name}</h1>}
 		{!user.id && <h1>New User</h1> }
 		<div className="card animated fadeInDown">
